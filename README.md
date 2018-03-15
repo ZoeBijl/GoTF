@@ -1,5 +1,5 @@
 # GoTF
-Statics for GoTF
+Statics for GoTF.
 
 ## Contributors
 
