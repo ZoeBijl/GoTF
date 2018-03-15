@@ -3,5 +3,5 @@ Statics for GoTF
 
 ## Contributors
 
-Proditaki
-Good Fella
+- Proditaki
+- Good Fella
