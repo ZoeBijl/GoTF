@@ -13,7 +13,7 @@ class GoTF {
             })
             .then(data => {
                 this.data = data
-                //this.generateDays(data)
+                this.generateDays(data)
             })
             .catch(error => {
                 throw new Error(error)
