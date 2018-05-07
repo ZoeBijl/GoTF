@@ -12,84 +12,93 @@ class GoTF {
                 return response.json()
             })
             .then(data => {
-                this.data = data
-                //this.generateDays(data)
+                this.dates = data.dates
+                this.users = this.generateUsers(data.users)
+                // this.generateDays()
+                this.generateTotals()
+                this.printTotals()
             })
             .catch(error => {
                 throw new Error(error)
             })
     }
 
-    generateDays(data) {
-        this.dates = Object.keys(data.dates)
-        console.log(this.dates)
-
-        this.dates.forEach(this.createDay.bind(this))
+    generateUsers(users) {
+        var usersArr = []
+        Object.keys(users).forEach(function(user){
+            // usersArr.push({id: user, name: users[user], count: 0})
+            usersArr.push(new GoTFUser(user, users[user]))
+        })
+        return usersArr
     }
-	
-    createDay(headingText) {
+
+    generateTotals() {
+        this.totalMessages = 0
+        Object.keys(this.dates).forEach(function(date){
+            Object.keys(this.dates[date]).forEach(function(userid){
+                var user = this.users.find(function(user) {return user.id == userid})
+                user.addMessagePerDate(date, this.dates[date][userid])
+                this.totalMessages += this.dates[date][userid]
+            }, this)
+        }, this)
+
+        this.users.sort(function(a, b){
+            return b.totalMessages - a.totalMessages
+        })
+    }
+
+    printTotals() {
         const heading = document.createElement('h2')
-        heading.innerHTML = headingText
+        heading.innerHTML = 'All time stats'
         this.main.appendChild(heading)
 
         const table = document.createElement('table')
-        const tr = document.createElement('tr')
-		const tr2 = document.createElement('tr')
-        const th = document.createElement('th')
-        const th2 = document.createElement('th')
-        th2.innerHTML = 'Messages'		
+        const head = table.createTHead()
+        const headRow = head.insertRow()
+        const headers = ['#', 'Name', 'Messages']
+        headers.forEach(function(header){
+            const th = document.createElement('th')
+            th.innerHTML = header
+            headRow.appendChild(th)
+        })
+        const foot = table.createTFoot()
+        const footRow = foot.insertRow()
+        const footers = ['#', 'Total', this.totalMessages]
+        footers.forEach(function(footer){
+            const th = document.createElement('th')
+            th.innerHTML = footer
+            footRow.appendChild(th)
+        })
 
-        tr.appendChild(th)
-	tr.appendChild(th2)
+        const body = document.createElement ("tbody");
+        var i = 0
+        this.users.forEach(function(user){
+            const row = body.insertRow()
+            row.insertCell().innerHTML = ++i
+            row.insertCell().innerHTML = user.name
+            row.insertCell().innerHTML = user.totalMessages
+        })
 
-	table.appendChild(tr)
-	table.appendChild(tr2)
-
-	var users = this.data.dates[headingText]		
-
-	var sorted = [];
-
-	for (var user in users) {
-		sorted.push([user, users[user]]);
-	}
-
-	sorted.sort(function(a,b) {
-		return b[1] - a[1];
-	});
-
-	var i
-
-	for (i = 0 ; i < sorted.length ; i++)
-	{
-		const l_tr = document.createElement('tr')
-		const td = document.createElement('td')
-		const td2 = document.createElement('td')
-
-		td.innerHTML = this.data.users[sorted[i][0]]
-		td2.innerHTML =  sorted[i][1]
-		l_tr.appendChild(td)
-		l_tr.appendChild(td2)
-		table.appendChild(l_tr)
-	}
-
-/*	for (var user in users) {
-		console.log(user)
-		console.log(sorted[user])
-		const l_tr = document.createElement('tr')
-		const td = document.createElement('td')
-		const td2 = document.createElement('td')
-		td.innerHTML = this.data.users[user]
-		td2.innerHTML = users[user]
-		l_tr.appendChild(td)
-		l_tr.appendChild(td2)
-		table.appendChild(l_tr)
-			//sorted.push([user, users[user]]);
-	}*/
-
-
-
+        table.appendChild(body)
         this.main.appendChild(table)
+    }
+}
 
+class GoTFUser {
+    constructor(id, name) {
+        this.id = id
+        this.name = name
+        this.totalMessages = 0
+        this.messagesPerDate = []
+    }
+
+    addTotalMessages(number) {
+        this.totalMessages += number
+    }
+
+    addMessagePerDate(date, messages) {
+        this.messagesPerDate.push({date: date, messages: messages})
+        this.addTotalMessages(messages)
     }
 }
 
