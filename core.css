@@ -22,12 +22,14 @@ p.mic {
 }
 
 main {
+    max-width: 50em;
+    margin-left: auto;
+    margin-right: auto;
 
 }
 table {
     border-collapse: collapse;
-    width: 50em;
-    margin: 0 auto;
+    width: 100%;
 }
 td, th {
     border: 1px solid #ddd;

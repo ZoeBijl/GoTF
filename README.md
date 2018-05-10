@@ -5,3 +5,4 @@ Statics for GoTF.
 
 - Proditaki
 - Good Fella
+- ZasX
